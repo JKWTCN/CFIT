@@ -4,6 +4,7 @@ using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
 using CFIT.Installer.UI;
+using Localization = CFIT.Installer.UI.Localization;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -31,9 +32,9 @@ namespace CFIT.Installer.LibWorker
         public static string GetTitle(DeckProcessOperation operation)
         {
             if (operation == DeckProcessOperation.START)
-                return $"Start StreamDeck";
+                return Localization.Translate("Start StreamDeck");
             else
-                return $"Stop StreamDeck";
+                return Localization.Translate("Stop StreamDeck");
         }
 
         public WorkerStreamDeckStartStop(TConfig config, DeckProcessOperation operation) : base(config, GetTitle(operation), "")
@@ -49,18 +50,18 @@ namespace CFIT.Installer.LibWorker
             Model.State = TaskState.ACTIVE;
             if (!StreamDeck.IsValid)
             {
-                Model.SetError("Could not get StreamDeck Version/Path!");
+                Model.SetError(Localization.Translate("Could not get StreamDeck Version/Path!"));
                 return false;
             }
 
             if (Operation == DeckProcessOperation.START)
             {
-                Model.Message = "Starting StreamDeck Software ...";
+                Model.Message = Localization.Translate("Starting StreamDeck Software ...");
                 return await StartStreamDeckSW();
             }
             else
             {
-                Model.Message = "Stopping StreamDeck Software ...";
+                Model.Message = Localization.Translate("Stopping StreamDeck Software ...");
                 return await StopStreamDeckSW();
             }
         }
@@ -77,9 +78,9 @@ namespace CFIT.Installer.LibWorker
 
         protected async Task<bool> StartStreamDeckSW()
         {
-            await TaskWaiter.CountdownWaiter(Model, "The StreamDeck Software will be started in {0}s!", StartStopDelay, Token, TaskState.ACTIVE);
+            await TaskWaiter.CountdownWaiter(Model, Localization.Translate("The StreamDeck Software will be started in {0}s!"), StartStopDelay, Token, TaskState.ACTIVE);
 
-            Model.Message = "Start StreamDeck ...";
+            Model.Message = Localization.Translate("Start StreamDeck ...");
             StreamDeck.StartSoftware();
 
             Func<bool> func = () => { return !FuncStreamDeck.IsDeckAndPluginRunning(); };
@@ -87,14 +88,14 @@ namespace CFIT.Installer.LibWorker
                 func = () => { return !FuncStreamDeck.IsStreamDeckRunning(); };
 
             bool result = false;
-            if (!await TaskWaiter.TimeoutWaiter(Model, "Wait for StreamDeck to start ({0}/{1})", CheckTimeout, func, Token))
+            if (!await TaskWaiter.TimeoutWaiter(Model, Localization.Translate("Wait for StreamDeck to start ({0}/{1})"), CheckTimeout, func, Token))
             {
-                Model.SetError("StreamDeck Software could not be started! (Re)Start it manually.");
+                Model.SetError(Localization.Translate("StreamDeck Software could not be started! (Re)Start it manually."));
                 result = false;
             }
             else
             {
-                Model.SetSuccess("StreamDeck Software running.");
+                Model.SetSuccess(Localization.Translate("StreamDeck Software running."));
                 result = true;
             }
 
@@ -104,8 +105,8 @@ namespace CFIT.Installer.LibWorker
 
         protected async Task<bool> StopStreamDeckSW()
         {
-            await TaskWaiter.CountdownWaiter(Model, "The StreamDeck Software will be stopped in {0}s!", StartStopDelay, Token, TaskState.ACTIVE);
-            Model.Message = "Stop StreamDeck and Plugin ...";
+            await TaskWaiter.CountdownWaiter(Model, Localization.Translate("The StreamDeck Software will be stopped in {0}s!"), StartStopDelay, Token, TaskState.ACTIVE);
+            Model.Message = Localization.Translate("Stop StreamDeck and Plugin ...");
             if (Operation == DeckProcessOperation.STOP)
                 StreamDeck.StopSoftware();
             else
@@ -115,19 +116,19 @@ namespace CFIT.Installer.LibWorker
             if (IgnorePluginRunning)
                 func = () => { return FuncStreamDeck.IsStreamDeckRunning(Operation == DeckProcessOperation.STOP); };
 
-            if (!await TaskWaiter.TimeoutWaiter(Model, "Wait for StreamDeck to close ({0}/{1})", CheckTimeout, func, Token))
+            if (!await TaskWaiter.TimeoutWaiter(Model, Localization.Translate("Wait for StreamDeck to close ({0}/{1})"), CheckTimeout, func, Token))
             {
-                Model.Message = "StreamDeck still open after Timeout - trying manual Cleanup ...";
+                Model.Message = Localization.Translate("StreamDeck still open after Timeout - trying manual Cleanup ...");
                 FuncIO.DeleteFile(FuncStreamDeck.ProgDataPath);
 
                 if (File.Exists(FuncStreamDeck.ProgDataPath))
                 {
-                    Model.SetError("StreamDeck Software could not be stopped!");
+                    Model.SetError(Localization.Translate("StreamDeck Software could not be stopped!"));
                     return false;
                 }
             }
 
-            Model.SetSuccess("StreamDeck Software closed.");
+            Model.SetSuccess(Localization.Translate("StreamDeck Software closed."));
             return true;
         }
     }

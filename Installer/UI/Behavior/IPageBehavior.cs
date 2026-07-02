@@ -109,8 +109,8 @@ namespace CFIT.Installer.UI.Behavior
         {
             if (BaseBehavior?.CheckRunning == true)
             {
-                var model = new TaskModel($"{BaseConfig?.ProductName} running");
-                model.SetError("The Application needs to be closed before the Installer can run!");
+                var model = new TaskModel(Localization.Translate("{0} running", BaseConfig?.ProductName));
+                model.SetError(Localization.Translate("The Application needs to be closed before the Installer can run!"));
                 model.IsCompleted = true;
                 TaskViewRef = new TaskView(model);
                 (ContentRef as StackPanel)?.Children?.Add(TaskViewRef);

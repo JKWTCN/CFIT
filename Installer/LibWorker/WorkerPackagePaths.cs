@@ -3,6 +3,7 @@ using CFIT.AppTools;
 using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace CFIT.Installer.LibWorker
     {
         public List<Simulator> SearchSimulators { get; set; } = new List<Simulator>();
 
-        public WorkerPackagePaths(C config, string title = "Package Paths", string message = "") : base(config, title, message)
+        public WorkerPackagePaths(C config, string title = "Package Paths", string message = "") : base(config, Localization.Translate(title), Localization.Translate(message))
         {
             Model.DisplayInSummary = false;
             SetPropertyFromOption<List<Simulator>>(ConfigBase.OptionSearchSimulators);
@@ -46,7 +47,7 @@ namespace CFIT.Installer.LibWorker
         {
             if (SearchSimulators?.Contains(sim) == true)
             {
-                Model.Message = $"Searching Package Path for {sim} ...";
+                Model.Message = Localization.Translate("Searching Package Path for {0} ...", sim);
                 if (FuncMsfs.CheckInstalledMsfs(sim, SimulatorStore.All, out Dictionary<SimulatorStore, string> paths))
                 {
                     dict.Add(sim, paths.Values.ToArray());
@@ -64,12 +65,12 @@ namespace CFIT.Installer.LibWorker
             if (packagePaths.Any(kv => kv.Value.Length > 0))
             {
                 Config.SetOption(ConfigBase.OptionPackagePaths, packagePaths);
-                Model.SetSuccess($"Found {packagePaths.Sum(kv => kv.Value.Length)} Package Paths!");
+                Model.SetSuccess(Localization.Translate("Found {0} Package Paths!", packagePaths.Sum(kv => kv.Value.Length)));
                 return Task.FromResult(true);
             }
             else
             {
-                Model.SetError("No Package Paths found!");
+                Model.SetError(Localization.Translate("No Package Paths found!"));
                 return Task.FromResult(false);
             }
         }

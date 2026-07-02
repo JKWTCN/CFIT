@@ -25,22 +25,22 @@ namespace CFIT.Installer.UI.Behavior
 
         public virtual Func<InstallerWindow, string> FuncGetTitle { get; set; } = (w) =>
         {
-            return $"{w.BaseConfig?.ProductName} Installer {w?.BaseBehavior?.FuncGetVersion?.Invoke(w)}";
+            return Localization.Translate("{0} Installer {1}", w.BaseConfig?.ProductName, w?.BaseBehavior?.FuncGetVersion?.Invoke(w));
         };
 
         public virtual Func<InstallerWindow, string> FuncGetVersion { get; set; } = (w) =>
         {
-            return $"v{w?.BaseConfig?.Version} ({w?.BaseConfig?.ProductVersion?.Timestamp})";
+            return Localization.Translate("v{0} ({1})", w?.BaseConfig?.Version, w?.BaseConfig?.ProductVersion?.Timestamp);
         };
 
         public virtual Func<InstallerWindow, string> FuncTextInstallationHintsHeader { get; set; } = (w) =>
         {
-            return $"This App will install or update {w?.BaseConfig?.ProductName} on your System.\r\nYour existing Configuration is preserverd during an Update.";
+            return Localization.Translate("This App will install or update {0} on your System.\r\nYour existing Configuration is preserved during an Update.", w?.BaseConfig?.ProductName);
         };
 
         public virtual Func<InstallerWindow, string> FuncTextInstallationHintsFooter { get; set; } = (w) =>
         {
-            return $"You do not need to remove the existing Installation for an Update!";
+            return Localization.Translate("You do not need to remove the existing Installation for an Update!");
         };
 
         public virtual Action<InstallerWindow> CallbackOnActivated { get; set; } = null;

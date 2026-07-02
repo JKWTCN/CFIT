@@ -1,5 +1,6 @@
 ﻿using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace CFIT.Installer.LibWorker
 {
     public class WorkerDesktopLinkRemove<C> : TaskWorker<C> where C : ConfigBase
     {
-        public WorkerDesktopLinkRemove(C config, string title = "Desktop Link", string message = "Removing Link ...") : base(config, title, message)
+        public WorkerDesktopLinkRemove(C config, string title = "Desktop Link", string message = "Removing Link ...") : base(config, Localization.Translate(title), Localization.Translate(message))
         {
             Model.DisplayInSummary = true;
             Model.DisplayCompleted = true;
@@ -33,7 +34,7 @@ namespace CFIT.Installer.LibWorker
         {
             bool result = RemoveLink();
             if (result)
-                Model.SetSuccess("Link removed from Desktop!");
+                Model.SetSuccess(Localization.Translate("Link removed from Desktop!"));
 
             return Task.FromResult(result);
         }

@@ -44,15 +44,15 @@ namespace CFIT.Installer.UI.Behavior
 
         protected override void SetHeader()
         {
-            string mode = "Installing";
+            string mode = Localization.Translate("Installing");
             if (BaseConfig?.Mode == SetupMode.UPDATE)
-                mode = "Updating";
+                mode = Localization.Translate("Updating");
             if (BaseConfig?.Mode == SetupMode.REMOVE)
-                mode = "Removing";
+                mode = Localization.Translate("Removing");
 
             var header = new TextBlock()
             {
-                Text = $"{mode} {BaseConfig?.ProductName} ...",
+                Text = Localization.Translate("{0} {1} ...", mode, BaseConfig?.ProductName),
                 FontSize = 14,
                 FontWeight = FontWeights.Bold
             };
@@ -70,7 +70,7 @@ namespace CFIT.Installer.UI.Behavior
         {
             var header = new TextBlock()
             {
-                Text = $"Note: Some Steps can be intercepted by Windows SmartScreen or User Account Control (UAC)!",
+                Text = Localization.Translate("Note: Some Steps can be intercepted by Windows SmartScreen or User Account Control (UAC)!"),
                 FontSize = 12,
                 FontWeight = FontWeights.DemiBold,
                 TextWrapping = TextWrapping.Wrap,
@@ -82,7 +82,7 @@ namespace CFIT.Installer.UI.Behavior
 
             header = new TextBlock()
             {
-                Text = $"Allow them to run for a successful Setup.",
+                Text = Localization.Translate("Allow them to run for a successful Setup."),
                 FontSize = 12,
                 FontWeight = FontWeights.DemiBold,
                 TextWrapping = TextWrapping.Wrap,
@@ -96,7 +96,7 @@ namespace CFIT.Installer.UI.Behavior
         protected override void SetButtons()
         {
             Gui.SetButton(Window?.ButtonLeft, false, false, "");
-            Gui.SetButton(Window?.ButtonRight, true, true, "Cancel", Brushes.Red, IconLoader.Instance.LoadIcon("box-arrow-in-right"), "Cancel Update / Installation");
+            Gui.SetButton(Window?.ButtonRight, true, true, Localization.Translate("Cancel"), Brushes.Red, IconLoader.Instance.LoadIcon("box-arrow-in-right"), Localization.Translate("Cancel Update / Installation"));
         }
 
         protected override void SetActions()
@@ -105,7 +105,7 @@ namespace CFIT.Installer.UI.Behavior
             Window.ActionRight = (w) =>
             {
                 BaseWorker?.TokenSource?.Cancel();
-                TaskStore.CurrentTask.SetError("Installation canceled by User.");
+                TaskStore.CurrentTask.SetError(Localization.Translate("Installation canceled by User."));
             };
         }
 
@@ -140,7 +140,7 @@ namespace CFIT.Installer.UI.Behavior
                 string icon = "icons/check-square";
                 if (BaseWorker?.IsSuccess == false || BaseWorker?.Token.IsCancellationRequested == true)
                     icon = "icons/x-square";
-                Gui.SetButton(Window?.ButtonRight, true, true, "Close", SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon(icon), "Close Installer");
+                Gui.SetButton(Window?.ButtonRight, true, true, Localization.Translate("Close"), SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon(icon), Localization.Translate("Close Installer"));
                 Window.ButtonRight.IsEnabled = true;
 
                 Window.ActionRight = (w) =>

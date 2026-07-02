@@ -2,6 +2,7 @@
 using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -12,11 +13,11 @@ namespace CFIT.Installer.LibWorker
         public virtual string InstallerRemoveDir { get; set; }
         public virtual string InstallerRemoveMsg { get; set; }
 
-        public WorkerAppRemove(C config) : base(config, $"Remove {config?.ProductName}", "")
+        public WorkerAppRemove(C config) : base(config, Localization.Translate("Remove {0}", config?.ProductName), "")
         {
             Model.DisplayCompleted = true;
             Model.DisplayInSummary = true;
-            InstallerRemoveMsg = $"Removed {Config.ProductName} successfully!";
+            InstallerRemoveMsg = Localization.Translate("Removed {0} successfully!", Config.ProductName);
             Logger.Debug($"Setting RemoveDir");
             SetRemoveDir();
         }
@@ -33,7 +34,7 @@ namespace CFIT.Installer.LibWorker
 
         protected virtual void RemoveAppFiles()
         {
-            Model.Message = "Removing App Files ...";
+            Model.Message = Localization.Translate("Removing App Files ...");
             FuncIO.DeleteDirectory(InstallerRemoveDir, true, false);
         }
 

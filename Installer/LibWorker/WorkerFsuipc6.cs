@@ -2,6 +2,7 @@
 using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,7 +26,7 @@ namespace CFIT.Installer.LibWorker
         public virtual bool DisplayPinned { get { return Model.DisplayPinned; } set { Model.DisplayPinned = value; } }
         public virtual bool DisplayCompleted { get { return Model.DisplayCompleted; } set { Model.DisplayCompleted = value; } }
 
-        public WorkerFsuipc6(C config, Simulator sim) : base(config, $"FSUIPC6 [{sim}]", "Check State and Version of FSUIPC6 ...")
+        public WorkerFsuipc6(C config, Simulator sim) : base(config, Localization.Translate("FSUIPC6 [{0}]", sim), Localization.Translate("Check State and Version of FSUIPC6 ..."))
         {
             Model.DisplayInSummary = false;
             Model.DisplayCompleted = true;
@@ -44,13 +45,13 @@ namespace CFIT.Installer.LibWorker
 
             if (string.IsNullOrWhiteSpace(Fsuipc6Url) || string.IsNullOrWhiteSpace(Fsuipc6Version) || string.IsNullOrWhiteSpace(Fsuipc6Installer))
             {
-                Model.SetError($"Url, Installer or Version not set - abort!");
+                Model.SetError(Localization.Translate("Url, Installer or Version not set - abort!"));
                 return result;
             }
 
             if (FuncFsuipc6.CheckVersion(Fsuipc6Simulator, Fsuipc6Version, Fsuipc6AllowBeta))
             {
-                Model.SetSuccess($"FSUIPC6 at or above minimum Version {Fsuipc6Version}!");
+                Model.SetSuccess(Localization.Translate("FSUIPC6 at or above minimum Version {0}!", Fsuipc6Version));
                 result = true;
             }
             else
@@ -60,15 +61,15 @@ namespace CFIT.Installer.LibWorker
                 if (ShowUpdateCompleted)
                     Model.DisplayCompleted = true;
 
-                Model.AddMessage(new TaskMessage($"FSUIPC6 below minimum Version {Fsuipc6Version}!", false, FontWeights.DemiBold), true, false);
+                Model.AddMessage(new TaskMessage(Localization.Translate("FSUIPC6 below minimum Version {0}!", Fsuipc6Version), false, FontWeights.DemiBold), true, false);
                 Model.State = TaskState.WAITING;
 
                 if (!SetupPossible())
                 {
-                    Model.AddMessage("Installation not possible while Prepar3D is running!", false, false, false, FontWeights.DemiBold);
-                    Model.AddMessage("Click Retry when Prepar3D is closed (or cancel the Installation).");
+                    Model.AddMessage(Localization.Translate("Installation not possible while Prepar3D is running!"), false, false, false, FontWeights.DemiBold);
+                    Model.AddMessage(Localization.Translate("Click Retry when Prepar3D is closed (or cancel the Installation)."));
                     var interaction = new TaskInteraction(Model);
-                    interaction.AddInteraction("Retry", InteractionResponse.RETRY);
+                    interaction.AddInteraction(Localization.Translate("Retry"), InteractionResponse.RETRY);
 
                     if (await interaction.WaitOnResponse(Token, InteractionResponse.RETRY) && SetupPossible())
                     {
@@ -78,7 +79,7 @@ namespace CFIT.Installer.LibWorker
                     else
                     {
                         Model.Links.Clear();
-                        Model.SetError("Prepar3D still running!");
+                        Model.SetError(Localization.Translate("Prepar3D still running!"));
                     }
                 }
                 else
@@ -95,29 +96,29 @@ namespace CFIT.Installer.LibWorker
 
         protected virtual async Task<bool> InstallFsuipc6()
         {
-            Model.SetState($"Downloading FSUIPC Installer ...", TaskState.WAITING);
+            Model.SetState(Localization.Translate("Downloading FSUIPC Installer ..."), TaskState.WAITING);
             string archivePath = await FuncIO.DownloadFile(Token, Fsuipc6Url, Fsuipc6InstallerArchive);
             if (string.IsNullOrWhiteSpace(archivePath))
             {
-                Model.SetError("Could not download FSUIPC Installer!");
+                Model.SetError(Localization.Translate("Could not download FSUIPC Installer!"));
                 return false;
             }
             string workDir = Path.GetDirectoryName(archivePath);
 
-            Model.Message = "Extracting Installer Archive ...";
+            Model.Message = Localization.Translate("Extracting Installer Archive ...");
             string installerDir = $@"{workDir}\{Fsuipc6Installer}";
             FuncIO.DeleteDirectory(installerDir, true);
             if (!FuncZip.ExtractZipFile(workDir, archivePath))
             {
-                Model.SetError("Error while extracting FSUIPC Installer!");
+                Model.SetError(Localization.Translate("Error while extracting FSUIPC Installer!"));
                 return false;
             }
 
-            Model.Message = $"Running FSUIPC Installer - manual Interaction required ...";
+            Model.Message = Localization.Translate("Running FSUIPC Installer - manual Interaction required ...");
             string binPath = $@"{installerDir}\{Fsuipc6InstallerBinary}";
             if (!File.Exists(binPath))
             {
-                Model.SetError("Could not locate the Installer Binary!");
+                Model.SetError(Localization.Translate("Could not locate the Installer Binary!"));
                 return false;
             }
 
@@ -133,12 +134,12 @@ namespace CFIT.Installer.LibWorker
 
             if (FuncFsuipc6.CheckVersion(Fsuipc6Simulator, Fsuipc6Version, Fsuipc6AllowBeta))
             {
-                Model.SetSuccess($"FSUIPC Version {Fsuipc6Version} was installed/updated successfully!");
+                Model.SetSuccess(Localization.Translate("FSUIPC Version {0} was installed/updated successfully!", Fsuipc6Version));
                 return true;
             }
             else
             {
-                Model.SetError($"FSUIPC not at target Version after Setup!");
+                Model.SetError(Localization.Translate("FSUIPC not at target Version after Setup!"));
                 return false;
             }
 

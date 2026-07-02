@@ -1,6 +1,7 @@
 ﻿using CFIT.AppLogger;
 using CFIT.AppTools;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -25,7 +26,7 @@ namespace CFIT.Installer.LibFunc
                 bool cmdResult = Sys.RunCommand(cmd, out string strOutput);
                 if (!cmdResult)
                 {
-                    TaskStore.CurrentTask.SetError($"The Command '{cmd}' returned a non-zero Exit Code!");
+                    TaskStore.CurrentTask.SetError(Localization.Translate("The Command '{0}' returned a non-zero Exit Code!", cmd));
                     return false;
                 }
 

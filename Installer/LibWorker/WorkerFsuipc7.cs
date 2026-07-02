@@ -2,6 +2,7 @@
 using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace CFIT.Installer.LibWorker
         public virtual bool DisplayPinned { get { return Model.DisplayPinned; } set { Model.DisplayPinned = value; } }
         public virtual bool DisplayCompleted { get { return Model.DisplayCompleted; } set { Model.DisplayCompleted = value; } }
 
-        public WorkerFsuipc7(C config, Simulator sim) : base(config, $"FSUIPC7 [{sim}]", "Check State and Version of FSUIPC7 ...")
+        public WorkerFsuipc7(C config, Simulator sim) : base(config, Localization.Translate("FSUIPC7 [{0}]", sim), Localization.Translate("Check State and Version of FSUIPC7 ..."))
         {
             Model.DisplayInSummary = false;
             Model.DisplayCompleted = true;
@@ -52,7 +53,7 @@ namespace CFIT.Installer.LibWorker
 
             if (string.IsNullOrWhiteSpace(Fsuipc7Url) || string.IsNullOrWhiteSpace(Fsuipc7Version) || string.IsNullOrWhiteSpace(Fsuipc7Installer))
             {
-                Model.SetError($"Url, Installer or Version not set - abort!");
+                Model.SetError(Localization.Translate("Url, Installer or Version not set - abort!"));
                 return result;
             }
 
@@ -60,7 +61,7 @@ namespace CFIT.Installer.LibWorker
             {
                 if (!Config.HasOption(ConfigBase.OptionPackagePaths, out Dictionary<Simulator, string[]> paths) || paths?.ContainsKey(Fsuipc7Simulator) == false || paths?.Count == 0)
                 {
-                    Model.SetError($"No Package Paths for MSFS set - abort!");
+                    Model.SetError(Localization.Translate("No Package Paths for MSFS set - abort!"));
                     return result;
                 }
 
@@ -79,15 +80,15 @@ namespace CFIT.Installer.LibWorker
                 if (ShowUpdateCompleted)
                     Model.DisplayCompleted = true;
 
-                Model.AddMessage(new TaskMessage($"FSUIPC7 below minimum Version {Fsuipc7Version}!", false, FontWeights.DemiBold), true, false);
+                Model.AddMessage(new TaskMessage(Localization.Translate("FSUIPC7 below minimum Version {0}!", Fsuipc7Version), false, FontWeights.DemiBold), true, false);
                 Model.State = TaskState.WAITING;
 
                 if (!SetupPossible())
                 {
-                    Model.AddMessage("Installation not possible while MSFS or FSUIPC are running!", false, false, false, FontWeights.DemiBold);
-                    Model.AddMessage("Click Retry when MSFS/FSUIPC are closed (or cancel the Installation).");
+                    Model.AddMessage(Localization.Translate("Installation not possible while MSFS or FSUIPC are running!"), false, false, false, FontWeights.DemiBold);
+                    Model.AddMessage(Localization.Translate("Click Retry when MSFS/FSUIPC are closed (or cancel the Installation)."));
                     var interaction = new TaskInteraction(Model);
-                    interaction.AddInteraction("Retry", InteractionResponse.RETRY);
+                    interaction.AddInteraction(Localization.Translate("Retry"), InteractionResponse.RETRY);
 
                     if (await interaction.WaitOnResponse(Token, InteractionResponse.RETRY) && SetupPossible())
                     {
@@ -97,7 +98,7 @@ namespace CFIT.Installer.LibWorker
                     else
                     {
                         Model.Links.Clear();
-                        Model.SetError("MSFS or FSUIPC still running!");
+                        Model.SetError(Localization.Translate("MSFS or FSUIPC still running!"));
                     }
                 }
                 else
@@ -116,49 +117,49 @@ namespace CFIT.Installer.LibWorker
         {
             if (!FuncMsfs.CheckPackageVersion(MsfsPackagePaths[Fsuipc7Simulator], Fsuipc7WasmName, Fsuipc7WasmVersion))
             {
-                Model.AddMessage(new TaskMessage($"FSUIPC7 is installed, but its WASM Module does not match the Minimum Version {Fsuipc7WasmVersion}!", true, FontWeights.DemiBold), true, false);
-                Model.AddMessage(new TaskMessage($"It is not required for the Plugin itself, but could lead to Problems with Profiles/Integrations which use FSUIPC7 Variables or Commands.\r\nConsider Reinstalling FSUIPC!", true, FontWeights.Regular), true, false);
+                Model.AddMessage(new TaskMessage(Localization.Translate("FSUIPC7 is installed, but its WASM Module does not match the Minimum Version {0}!", Fsuipc7WasmVersion), true, FontWeights.DemiBold), true, false);
+                Model.AddMessage(new TaskMessage(Localization.Translate("It is not required for the Plugin itself, but could lead to Problems with Profiles/Integrations which use FSUIPC7 Variables or Commands.\r\nConsider Reinstalling FSUIPC!"), true, FontWeights.Regular), true, false);
                 Model.State = TaskState.WAITING;
-                Model.AddLink("FSUIPC", "https://fsuipc.com/");
+                Model.AddLink(Localization.Translate("FSUIPC"), "https://fsuipc.com/");
                 Model.DisplayInSummary = true;
             }
             else if (!FuncFsuipc7.CheckSettingsForPumps())
             {
-                Model.AddMessage(new TaskMessage("FSUIPC7 is installed, but the FSUIPC7.ini is missing the NumberOfPumps=0 Entry in the [General] Section (which helps to avoid Stutters)!", true, FontWeights.DemiBold), true, false);
+                Model.AddMessage(new TaskMessage(Localization.Translate("FSUIPC7 is installed, but the FSUIPC7.ini is missing the NumberOfPumps=0 Entry in the [General] Section (which helps to avoid Stutters)!"), true, FontWeights.DemiBold), true, false);
                 Model.State = TaskState.WAITING;
                 Model.DisplayInSummary = true;
             }
             else
             {
-                Model.SetSuccess($"FSUIPC7 at or above minimum Version {Fsuipc7Version}!");
+                Model.SetSuccess(Localization.Translate("FSUIPC7 at or above minimum Version {0}!", Fsuipc7Version));
             }
         }
 
         protected virtual async Task<bool> InstallFsuipc7()
         {
-            Model.SetState($"Downloading FSUIPC Installer ...", TaskState.WAITING);
+            Model.SetState(Localization.Translate("Downloading FSUIPC Installer ..."), TaskState.WAITING);
             string archivePath = await FuncIO.DownloadFile(Token, Fsuipc7Url, Fsuipc7InstallerArchive);
             if (string.IsNullOrWhiteSpace(archivePath))
             {
-                Model.SetError("Could not download FSUIPC Installer!");
+                Model.SetError(Localization.Translate("Could not download FSUIPC Installer!"));
                 return false;
             }
             string workDir = Path.GetDirectoryName(archivePath);
 
-            Model.Message = "Extracting Installer Archive ...";
+            Model.Message = Localization.Translate("Extracting Installer Archive ...");
             string installerDir = $@"{workDir}\{Fsuipc7Installer}";
             FuncIO.DeleteDirectory(installerDir, true);
             if (!FuncZip.ExtractZipFile(workDir, archivePath))
             {
-                Model.SetError("Error while extracting FSUIPC Installer!");
+                Model.SetError(Localization.Translate("Error while extracting FSUIPC Installer!"));
                 return false;
             }
 
-            Model.Message = $"Running FSUIPC Installer - manual Interaction required ...";
+            Model.Message = Localization.Translate("Running FSUIPC Installer - manual Interaction required ...");
             string binPath = $@"{installerDir}\{Fsuipc7InstallerBinary}";
             if (!File.Exists(binPath))
             {
-                Model.SetError("Could not locate the Installer Binary!");
+                Model.SetError(Localization.Translate("Could not locate the Installer Binary!"));
                 return false;
             }
 
@@ -174,12 +175,12 @@ namespace CFIT.Installer.LibWorker
 
             if (FuncFsuipc7.CheckVersion(Fsuipc7Version, Fsuipc7AllowBeta))
             {
-                Model.SetSuccess($"FSUIPC Version {Fsuipc7Version} was installed/updated successfully!");
+                Model.SetSuccess(Localization.Translate("FSUIPC Version {0} was installed/updated successfully!", Fsuipc7Version));
                 return true;
             }
             else
             {
-                Model.SetError($"FSUIPC not at target Version after Setup!");
+                Model.SetError(Localization.Translate("FSUIPC not at target Version after Setup!"));
                 return false;
             }
         }

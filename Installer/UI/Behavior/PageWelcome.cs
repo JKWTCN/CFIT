@@ -35,7 +35,7 @@ namespace CFIT.Installer.UI.Behavior
         {
             TextBlock header = new TextBlock()
             {
-                Text = $"{BaseConfig?.ProductName} Installer",
+                Text = Localization.Translate("{0} Installer", BaseConfig?.ProductName),
                 FontSize = 14,
                 FontWeight = FontWeights.Bold,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -98,7 +98,7 @@ namespace CFIT.Installer.UI.Behavior
             {
                 TextBlock header = new TextBlock();
                 {
-                    header.Text = $"Do NOT run the Installer or {BaseConfig?.ProductName} as Administrator!\r\n\r\nIf the Installer or {BaseConfig?.ProductName} Binary is blocked, add an Exclusion to your AV-Software / WindowsDefender!";
+                    header.Text = Localization.Translate("Do NOT run the Installer or {0} as Administrator!\r\n\r\nIf the Installer or {0} Binary is blocked, add an Exclusion to your AV-Software / WindowsDefender!", BaseConfig?.ProductName);
                     header.FontSize = 12;
                     header.FontWeight = FontWeights.DemiBold;
                     header.TextWrapping = TextWrapping.Wrap;
@@ -133,7 +133,7 @@ namespace CFIT.Installer.UI.Behavior
                 var version = ProductVersion.GetProductVersionFromFile(BaseConfig.ProductVersionPath);
                 var block = new TextBlock()
                 {
-                    Text = $"Installed Version: v{version?.VersionParsed?.ToString(BaseConfig.ProductVersionFields)} ({version?.Timestamp})",
+                    Text = Localization.Translate("Installed Version: v{0} ({1})", version?.VersionParsed?.ToString(BaseConfig.ProductVersionFields), version?.Timestamp),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     TextWrapping = TextWrapping.Wrap,
                     FontSize = 10,
@@ -145,7 +145,7 @@ namespace CFIT.Installer.UI.Behavior
 
         protected virtual MessageBoxResult ShowMessageBoxRemove(string text, string productname)
         {
-            return MessageBox.Show($"{text}\r\n\r\nDo you want to continue?", $"Remove {productname}", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            return MessageBox.Show(Localization.Translate("{0}\r\n\r\nDo you want to continue?", text), Localization.Translate("Remove {0}", productname), MessageBoxButton.YesNo, MessageBoxImage.Warning);
         }
 
         protected override void SetButtons()
@@ -156,23 +156,24 @@ namespace CFIT.Installer.UI.Behavior
 
         protected virtual string GetRemoveText()
         {
-            return $"{BaseConfig?.ProductName} will be removed completely from your System.\r\n!!! Including all Settings and custom Changes !!!";
+            return Localization.Translate("{0} will be removed completely from your System.\r\n!!! Including all Settings and custom Changes !!!", BaseConfig?.ProductName);
         }
 
         protected virtual void SetLeftButton()
         {
             if (BaseDefinition?.IsProductInstalled == true)
-                Gui.SetButton(Window?.ButtonLeft, true, true, "Remove", Brushes.Red, IconLoader.Instance.LoadIcon("trash"), GetRemoveText());
+                Gui.SetButton(Window?.ButtonLeft, true, true, Localization.Translate("Remove"), Brushes.Red, IconLoader.Instance.LoadIcon("trash"), GetRemoveText());
             else
                 Gui.SetButton(Window?.ButtonLeft, false, false);
         }
 
         protected virtual void SetRightButton()
         {
+            string updateTooltip = Localization.Translate("Update the existing Installation of {0}.\r\nRemoving the previous Version manually is neither required nor recommended!", BaseConfig?.ProductName);
             if (BaseDefinition?.IsProductInstalled == true)
-                Gui.SetButton(Window?.ButtonRight, true, true, "Update", Brushes.Green, IconLoader.Instance.LoadIcon("box-arrow-in-right"), $"Update the existing Installation of {BaseConfig?.ProductName}.\r\nRemoving the previous Version manually is neither required nor recommended!");
+                Gui.SetButton(Window?.ButtonRight, true, true, Localization.Translate("Update"), Brushes.Green, IconLoader.Instance.LoadIcon("box-arrow-in-right"), updateTooltip);
             else
-                Gui.SetButton(Window?.ButtonRight, true, true, "Install", SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("box-arrow-in-right"), $"Update the existing Installation of {BaseConfig?.ProductName}.\r\nRemoving the previous Version manually is neither required nor recommended!");
+                Gui.SetButton(Window?.ButtonRight, true, true, Localization.Translate("Install"), SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("box-arrow-in-right"), updateTooltip);
         }
 
         protected override void SetActions()

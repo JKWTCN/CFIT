@@ -4,6 +4,7 @@ using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
 using CFIT.Installer.UI;
+using Localization = CFIT.Installer.UI.Localization;
 using System;
 using System.Threading.Tasks;
 
@@ -26,9 +27,9 @@ namespace CFIT.Installer.LibWorker
         public static string GetTitle(DeckProcessOperation operation)
         {
             if (operation == DeckProcessOperation.START)
-                return $"Start StreamDock";
+                return Localization.Translate("Start StreamDock");
             else
-                return $"Stop StreamDock";
+                return Localization.Translate("Stop StreamDock");
         }
 
         public WorkerStreamDockStartStop(TConfig config, DeckProcessOperation operation) : base(config, GetTitle(operation), "")
@@ -45,12 +46,12 @@ namespace CFIT.Installer.LibWorker
 
             if (Operation == DeckProcessOperation.START)
             {
-                Model.Message = "Starting StreamDock Software ...";
+                Model.Message = Localization.Translate("Starting StreamDock Software ...");
                 return await StartStreamDockSW();
             }
             else
             {
-                Model.Message = "Stopping StreamDock Software ...";
+                Model.Message = Localization.Translate("Stopping StreamDock Software ...");
                 return await StopStreamDockSW();
             }
         }
@@ -67,9 +68,9 @@ namespace CFIT.Installer.LibWorker
 
         protected async Task<bool> StartStreamDockSW()
         {
-            await TaskWaiter.CountdownWaiter(Model, "The StreamDock Software will be started in {0}s!", StartStopDelay, Token, TaskState.ACTIVE);
+            await TaskWaiter.CountdownWaiter(Model, Localization.Translate("The StreamDock Software will be started in {0}s!"), StartStopDelay, Token, TaskState.ACTIVE);
 
-            Model.Message = "Start StreamDock ...";
+            Model.Message = Localization.Translate("Start StreamDock ...");
             StreamDock.StartSoftware();
 
             Func<bool> func = () => { return !FuncStreamDock.IsDeckAndPluginRunning(); };
@@ -77,14 +78,14 @@ namespace CFIT.Installer.LibWorker
                 func = () => { return !FuncStreamDock.IsStreamDockRunning(); };
 
             bool result = false;
-            if (!await TaskWaiter.TimeoutWaiter(Model, "Wait for StreamDock to start ({0}/{1})", CheckTimeout, func, Token))
+            if (!await TaskWaiter.TimeoutWaiter(Model, Localization.Translate("Wait for StreamDock to start ({0}/{1})"), CheckTimeout, func, Token))
             {
-                Model.SetError("StreamDock Software could not be started! (Re)Start it manually.");
+                Model.SetError(Localization.Translate("StreamDock Software could not be started! (Re)Start it manually."));
                 result = false;
             }
             else
             {
-                Model.SetSuccess("StreamDock Software running.");
+                Model.SetSuccess(Localization.Translate("StreamDock Software running."));
                 result = true;
             }
 
@@ -94,21 +95,21 @@ namespace CFIT.Installer.LibWorker
 
         protected async Task<bool> StopStreamDockSW()
         {
-            await TaskWaiter.CountdownWaiter(Model, "The StreamDock Software will be stopped in {0}s!", StartStopDelay, Token, TaskState.ACTIVE);
-            Model.Message = "Stop StreamDock and Plugin ...";
+            await TaskWaiter.CountdownWaiter(Model, Localization.Translate("The StreamDock Software will be stopped in {0}s!"), StartStopDelay, Token, TaskState.ACTIVE);
+            Model.Message = Localization.Translate("Stop StreamDock and Plugin ...");
             StreamDock.KillSoftware();
 
             Func<bool> func = () => { return FuncStreamDock.IsDeckOrPluginRunning(); };
             if (IgnorePluginRunning)
                 func = () => { return !FuncStreamDock.IsStreamDockRunning(); };
 
-            if (!await TaskWaiter.TimeoutWaiter(Model, "Wait for StreamDock to close ({0}/{1})", CheckTimeout, func, Token))
+            if (!await TaskWaiter.TimeoutWaiter(Model, Localization.Translate("Wait for StreamDock to close ({0}/{1})"), CheckTimeout, func, Token))
             {
-                Model.SetError("StreamDock Software could not be stopped!");
+                Model.SetError(Localization.Translate("StreamDock Software could not be stopped!"));
                 return false;
             }
 
-            Model.SetSuccess("StreamDock Software closed.");
+            Model.SetSuccess(Localization.Translate("StreamDock Software closed."));
             return true;
         }
     }

@@ -3,6 +3,7 @@ using CFIT.AppTools;
 using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace CFIT.Installer.LibWorker
 
         public virtual List<string> FileExclusions { get; set; } = new List<string>();
 
-        public WorkerAppInstall(C config) : base(config, $"Install {config?.ProductName}", "")
+        public WorkerAppInstall(C config) : base(config, Localization.Translate("Install {0}", config?.ProductName), "")
         {
             InstallerExtractDir = Config.ProductPath;
             Model.DisplayCompleted = true;
@@ -42,14 +43,14 @@ namespace CFIT.Installer.LibWorker
             if (Config.Mode == SetupMode.INSTALL)
             {
                 if (InstallerSummaryPath)
-                    InstallerSuccessMsg = $"Successfully installed {Config.ProductName} to:";
+                    InstallerSuccessMsg = Localization.Translate("Successfully installed {0} to:", Config.ProductName);
                 else
-                    InstallerSuccessMsg = $"Successfully installed {Config.ProductName}!";
+                    InstallerSuccessMsg = Localization.Translate("Successfully installed {0}!", Config.ProductName);
             }
             else
             {
-                Model.Title = $"Update {Config.ProductName}";
-                InstallerSuccessMsg = $"Successfully updated {Config.ProductName} to Version:\r\nv{Config.ProductVersion.VersionParsed.ToString(3)} ({Config.ProductVersion.Timestamp})";
+                Model.Title = Localization.Translate("Update {0}", Config.ProductName);
+                InstallerSuccessMsg = Localization.Translate("Successfully updated {0} to Version:\r\nv{1} ({2})", Config.ProductName, Config.ProductVersion.VersionParsed.ToString(3), Config.ProductVersion.Timestamp);
             }
 
             SetPropertyFromConfig<string>("InstallerNamespace");
@@ -97,7 +98,7 @@ namespace CFIT.Installer.LibWorker
             {
                 if (stream == null)
                 {
-                    Model.SetError("Could not retrieve AppPackage Stream from Assembly!");
+                    Model.SetError(Localization.Translate("Could not retrieve AppPackage Stream from Assembly!"));
                     return result;
                 }
 
@@ -140,7 +141,7 @@ namespace CFIT.Installer.LibWorker
 
             if (Config.Mode == SetupMode.UPDATE && InstallerDeleteOnUpdate && !Token.IsCancellationRequested)
             {
-                Model.Message = "Deleting old Binaries ...";
+                Model.Message = Localization.Translate("Deleting old Binaries ...");
                 deleteSuccess = DeleteOldFiles();
             }
             else
@@ -148,7 +149,7 @@ namespace CFIT.Installer.LibWorker
 
             if (deleteSuccess && !Token.IsCancellationRequested)
             {
-                Model.Message = "Extracting App Binaries ...";
+                Model.Message = Localization.Translate("Extracting App Binaries ...");
                 extractSuccess = ExtractAppPackage();
             }
             else
@@ -156,7 +157,7 @@ namespace CFIT.Installer.LibWorker
 
             if (extractSuccess && InstallerRunCreateConfig && !Config.HasConfigFile && !Token.IsCancellationRequested)
             {
-                Model.Message = "Create Default Configuation ...";
+                Model.Message = Localization.Translate("Create Default Configuration ...");
                 configSuccess = CreateDefaultConfig();
             }
             else
@@ -164,7 +165,7 @@ namespace CFIT.Installer.LibWorker
 
             if (configSuccess && InstallerRunFinalize && !Token.IsCancellationRequested)
             {
-                Model.Message = "Finalizing Setup ...";
+                Model.Message = Localization.Translate("Finalizing Setup ...");
                 finalizeSuccess = FinalizeSetup();
             }
             else
@@ -172,7 +173,7 @@ namespace CFIT.Installer.LibWorker
 
             if (finalizeSuccess && InstallerRunSaveVersion && !Token.IsCancellationRequested)
             {
-                Model.Message = "Saving App Version ...";
+                Model.Message = Localization.Translate("Saving App Version ...");
                 versionSuccess = SaveVersion();
             }
             else

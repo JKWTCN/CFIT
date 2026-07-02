@@ -39,7 +39,7 @@ namespace CFIT.Installer.UI.Behavior
         {
             TextBlock header = new TextBlock();
             {
-                header.Text = $"Setup Options";
+                header.Text = Localization.Translate("Setup Options");
                 header.FontSize = 14;
                 header.FontWeight = FontWeights.Bold;
                 header.HorizontalAlignment = HorizontalAlignment.Center;
@@ -68,7 +68,7 @@ namespace CFIT.Installer.UI.Behavior
 
         protected virtual void SetCancelButton()
         {
-            Gui.SetButton(Window?.ButtonLeft, true, true, "Cancel", Brushes.Red, IconLoader.Instance.LoadIcon("x-square"), "Cancel Update / Installation");
+            Gui.SetButton(Window?.ButtonLeft, true, true, Localization.Translate("Cancel"), Brushes.Red, IconLoader.Instance.LoadIcon("x-square"), Localization.Translate("Cancel Update / Installation"));
         }
 
         protected virtual void SetInstallButton()

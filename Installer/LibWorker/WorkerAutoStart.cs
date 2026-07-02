@@ -2,6 +2,7 @@
 using CFIT.Installer.LibFunc;
 using CFIT.Installer.Product;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System;
 using System.Threading.Tasks;
 
@@ -23,12 +24,12 @@ namespace CFIT.Installer.LibWorker
 
         protected virtual int Fails { get; set; } = 0;
 
-        public WorkerAutoStart(C config, string title = "Setup Auto-Start", string message = "") : base(config, title, message)
+        public WorkerAutoStart(C config, string title = "Setup Auto-Start", string message = "") : base(config, Localization.Translate(title), Localization.Translate(message))
         {
             Model.DisplayInSummary = true;
             Model.DisplayCompleted = true;
             SetPropertyFromOption<SimAutoStart>(ConfigBase.OptionAutoStartTargets);
-            AutoStartSuccessMsg = $"Auto-Start configured for {Config.ProductName}!";
+            AutoStartSuccessMsg = Localization.Translate("Auto-Start configured for {0}!", Config.ProductName);
         }
 
         protected virtual void RemoveAutoStart(SimAutoStart flag, Func<bool> func)
@@ -45,7 +46,7 @@ namespace CFIT.Installer.LibWorker
                 return;
 
             if (string.IsNullOrEmpty(message))
-                message = $"Add/Update {flag} Auto-Start Entry ...";
+                message = Localization.Translate("Add/Update {0} Auto-Start Entry ...", flag);
             Model.Message = message;
 
             if (func?.Invoke() == false)
@@ -58,26 +59,26 @@ namespace CFIT.Installer.LibWorker
 
             if (AutoStartTargets.HasFlag(SimAutoStart.NOCHANGE))
             {
-                Model.SetSuccess($"No Changes to Auto-Start!");
+                Model.SetSuccess(Localization.Translate("No Changes to Auto-Start!"));
                 Model.DisplayInSummary = false;
                 return Task.FromResult(true);
             }
             else if (AutoStartTargets.HasFlag(SimAutoStart.NOAUTO))
             {
-                Model.Message = "Remove Auto-Start Entries ...";
+                Model.Message = Localization.Translate("Remove Auto-Start Entries ...");
                 RemoveAutoStart(SimAutoStart.FSUIPC, () => { return FuncFsuipc7.AutoStartRemove(Config.ProductExe); });
                 RemoveAutoStart(SimAutoStart.MSFS2020, () => { return FuncMsfs.AutoStartRemove(Simulator.MSFS2020, Config.ProductExe); });
                 RemoveAutoStart(SimAutoStart.MSFS2024, () => { return FuncMsfs.AutoStartRemove(Simulator.MSFS2024, Config.ProductExe); });
                 result = Fails == 0;
                 if (!result)
-                    Model.SetError("Auto-Start Removal failed!");
+                    Model.SetError(Localization.Translate("Auto-Start Removal failed!"));
                 else
-                    Model.SetSuccess($"Auto-Start removed for {Config.ProductName}!");
+                    Model.SetSuccess(Localization.Translate("Auto-Start removed for {0}!", Config.ProductName));
                 return Task.FromResult(result);
             }
             else
             {
-                Model.Message = "Remove unused Auto-Start Entries ...";
+                Model.Message = Localization.Translate("Remove unused Auto-Start Entries ...");
                 RemoveAutoStart(SimAutoStart.FSUIPC, () => { return FuncFsuipc7.AutoStartRemove(Config.ProductExe); });
                 RemoveAutoStart(SimAutoStart.MSFS2020, () => { return FuncMsfs.AutoStartRemove(Simulator.MSFS2020, Config.ProductExe); });
                 RemoveAutoStart(SimAutoStart.MSFS2024, () => { return FuncMsfs.AutoStartRemove(Simulator.MSFS2024, Config.ProductExe); });
@@ -92,10 +93,10 @@ namespace CFIT.Installer.LibWorker
 
                     result = Fails == 0;
                     if (!result)
-                        Model.SetError("Auto-Start Configuration failed!");
+                        Model.SetError(Localization.Translate("Auto-Start Configuration failed!"));
                 }
                 else
-                    Model.SetError("Auto-Start Removal failed!");
+                    Model.SetError(Localization.Translate("Auto-Start Removal failed!"));
 
                 if (result)
                 {

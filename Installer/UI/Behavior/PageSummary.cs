@@ -29,15 +29,15 @@ namespace CFIT.Installer.UI.Behavior
 
         protected override void SetHeader()
         {
-            string mode = "Installation";
+            string mode = Localization.Translate("Installation");
             if (BaseConfig?.Mode == SetupMode.UPDATE)
-                mode = "Update";
+                mode = Localization.Translate("Update");
             if (BaseConfig?.Mode == SetupMode.REMOVE)
-                mode = "Removal";
+                mode = Localization.Translate("Removal");
 
             TextBlock header = new TextBlock()
             {
-                Text = $"{mode} ",
+                Text = Localization.Translate("{0} ", mode),
                 FontSize = 14,
                 FontWeight = FontWeights.Bold,
             };
@@ -47,7 +47,7 @@ namespace CFIT.Installer.UI.Behavior
             {
                 result = new Run()
                 {
-                    Text = "successful!",
+                    Text = Localization.Translate("successful!"),
                     FontSize = 14,
                     Foreground = Brushes.Green,
                     FontWeight = FontWeights.Bold,
@@ -57,7 +57,7 @@ namespace CFIT.Installer.UI.Behavior
             {
                 result = new Run()
                 {
-                    Text = "FAILED!",
+                    Text = Localization.Translate("FAILED!"),
                     FontSize = 14,
                     Foreground = Brushes.Red,
                     FontWeight = FontWeights.Bold,
@@ -90,7 +90,7 @@ namespace CFIT.Installer.UI.Behavior
             {
                 var block = new TextBlock
                 {
-                    Text = $"{BaseConfig?.ProductName} was installed to:\r\n{BaseConfig?.ProductPath}",
+                    Text = Localization.Translate("{0} was installed to:\r\n{1}", BaseConfig?.ProductName, BaseConfig?.ProductPath),
                     FontSize = 12,
                     TextWrapping = TextWrapping.Wrap,
                     Width = 448,
@@ -101,9 +101,9 @@ namespace CFIT.Installer.UI.Behavior
 
             if (BaseWorker?.IsSuccess == false)
             {
-                string text = $"The Installer ran into an Error!\r\n\r\nUse the 'Get Logs' Button to view the Log ({Logger.FileName}).\r\nYou need to provide the Log-File to get Support!";
+                string text = Localization.Translate("The Installer ran into an Error!\r\n\r\nUse the 'Get Logs' Button to view the Log ({0}).\r\nYou need to provide the Log-File to get Support!", Logger.FileName);
                 if (BaseBehavior?.ShowTasksInSummary == false)
-                    text = $"The Installer ran into an Error:\r\n{TaskStore.CurrentTask?.ErrorMessage}\r\n\r\n\r\nUse the 'Get Logs' Button to view the Log ({Logger.FileName}).\r\nYou need to provide the Log-File to get Support!";
+                    text = Localization.Translate("The Installer ran into an Error:\r\n{0}\r\n\r\n\r\nUse the 'Get Logs' Button to view the Log ({1}).\r\nYou need to provide the Log-File to get Support!", TaskStore.CurrentTask?.ErrorMessage, Logger.FileName);
 
                 var block = new TextBlock
                 {
@@ -129,12 +129,12 @@ namespace CFIT.Installer.UI.Behavior
             if (BaseWorker?.IsSuccess == true)
                 Gui.SetButton(Window?.ButtonLeft, false, false, "");
             else
-                Gui.SetButton(Window?.ButtonLeft, true, true, "Get Logs", SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("box-arrow-in-right"), "");
+                Gui.SetButton(Window?.ButtonLeft, true, true, Localization.Translate("Get Logs"), SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("box-arrow-in-right"), "");
 
             if (BaseWorker?.IsSuccess == true)
-                Gui.SetButton(Window?.ButtonRight, true, true, "Close", SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("check-square"), "Close Installer");
+                Gui.SetButton(Window?.ButtonRight, true, true, Localization.Translate("Close"), SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("check-square"), Localization.Translate("Close Installer"));
             else
-                Gui.SetButton(Window?.ButtonRight, true, true, "Close", SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("box-arrow-in-right"), "Close Installer");
+                Gui.SetButton(Window?.ButtonRight, true, true, Localization.Translate("Close"), SystemColors.ControlTextBrush, IconLoader.Instance.LoadIcon("box-arrow-in-right"), Localization.Translate("Close Installer"));
         }
 
         protected override void SetActions()

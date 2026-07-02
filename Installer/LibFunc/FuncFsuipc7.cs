@@ -1,6 +1,7 @@
 ﻿using CFIT.AppLogger;
 using CFIT.AppTools;
 using CFIT.Installer.Tasks;
+using Localization = CFIT.Installer.UI.Localization;
 using System;
 using System.IO;
 using System.Text;
@@ -135,7 +136,7 @@ namespace CFIT.Installer.LibFunc
                 if (fileContent == null)
                 {
                     Logger.Debug($"FileContent empty! ({iniPath})");
-                    TaskStore.CurrentTask.SetError($"The File FSUIPC7.ini is empty!");
+                    TaskStore.CurrentTask.SetError(Localization.Translate("The File FSUIPC7.ini is empty!"));
                     return false;
                 }
 
