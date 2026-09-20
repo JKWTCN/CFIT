@@ -47,9 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CFIT.AppLogger" Version="2026.255.17.3105" />
-    <PackageReference Include="CFIT.AppTools" Version="2026.255.17.3122" />
-    <PackageReference Include="CFIT.SimConnectLib" Version="2026.255.17.3143" />
+    <PackageReference Include="CFIT.AppLogger" Version="2026.263.14.1126" />
+    <PackageReference Include="CFIT.AppTools" Version="2026.263.14.1126" />
+    <PackageReference Include="CFIT.SimConnectLib" Version="2026.263.14.1126" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.4.1">
 	  <Pack>false</Pack>
