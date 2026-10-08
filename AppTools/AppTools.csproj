@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net48-windows10.0.17763.0;net10.0-windows10.0.17763.0</TargetFrameworks>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CFIT.AppLogger" Version="2026.263.14.1126" />
+    <PackageReference Include="CFIT.AppLogger" Version="2026.281.9.2851" />
     <PackageReference Include="System.Text.Json" Version="10.0.12" />
   </ItemGroup>
 
@@ -38,11 +38,11 @@
     <None Include="readme.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SkipCfitBuildHooks)' != 'true'">
     <Exec Command="pwsh -ExecutionPolicy Unrestricted -file &quot;..\NuBuild.ps1&quot; $(SolutionDir) $(TargetDir) &quot;$(Configuration)&quot; &quot;AppTools&quot;" />
   </Target>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(SkipCfitBuildHooks)' != 'true'">
     <Exec Command="pwsh -ExecutionPolicy Unrestricted -file &quot;..\NuUpdate.ps1&quot; $(SolutionDir) $(TargetDir) &quot;$(Configuration)&quot; &quot;AppTools&quot; &quot;CFIT.AppLogger&quot;" />
   </Target>
 
