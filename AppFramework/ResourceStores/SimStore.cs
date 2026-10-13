@@ -70,7 +70,7 @@ namespace CFIT.AppFramework.ResourceStores
                 {
                     if (RefCount[name] <= 1)
                     {
-                        subscription.Unsubscribe();
+                        subscription?.Unsubscribe();
                         SimResources.Remove(name);
                         RefCount.Remove(name);
                     }
@@ -80,7 +80,7 @@ namespace CFIT.AppFramework.ResourceStores
                 else
                 {
                     Logger.Warning($"The Resource '{name}' has no Ref Count");
-                    subscription.Unsubscribe();
+                    subscription?.Unsubscribe();
                     SimResources.Remove(name);
                 }
             }
@@ -91,7 +91,7 @@ namespace CFIT.AppFramework.ResourceStores
         public virtual void Clear()
         {
             foreach (var subscription in SimResources.Values)
-                subscription.Unsubscribe();
+                subscription?.Unsubscribe();
             SimResources.Clear();
         }
 
