@@ -3,6 +3,7 @@ using CFIT.AppTools;
 using CFIT.Installer.Tasks;
 using System;
 using System.IO;
+using Microsoft.Win32;
 
 namespace CFIT.Installer.LibFunc
 {
@@ -37,6 +38,22 @@ namespace CFIT.Installer.LibFunc
 
         protected virtual string GetStreamDockBinaryPath()
         {
+            // The protocol registration follows custom installation locations as well.
+            using (var commandKey = Registry.ClassesRoot.OpenSubKey(@"streamdock\shell\open\command"))
+            {
+                string command = commandKey?.GetValue(null) as string;
+                if (!string.IsNullOrWhiteSpace(command) && command[0] == '"')
+                {
+                    int end = command.IndexOf('"', 1);
+                    if (end > 1)
+                    {
+                        string registeredPath = Environment.ExpandEnvironmentVariables(command.Substring(1, end - 1));
+                        if (File.Exists(registeredPath))
+                            return registeredPath;
+                    }
+                }
+            }
+
             foreach (var path in DeckInstallPaths)
             {
                 if (File.Exists(path))

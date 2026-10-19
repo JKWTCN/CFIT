@@ -101,7 +101,7 @@ namespace CFIT.Installer.LibWorker
 
             Func<bool> func = () => { return FuncStreamDock.IsDeckOrPluginRunning(); };
             if (IgnorePluginRunning)
-                func = () => { return !FuncStreamDock.IsStreamDockRunning(); };
+                func = () => { return FuncStreamDock.IsStreamDockRunning(); };
 
             if (!await TaskWaiter.TimeoutWaiter(Model, Localization.Translate("Wait for StreamDock to close ({0}/{1})"), CheckTimeout, func, Token))
             {
